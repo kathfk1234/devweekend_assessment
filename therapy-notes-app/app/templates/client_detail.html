@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ client.full_name }} - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="client-detail">
+    <div class="detail-header">
+        <div>
+            <h1>{{ client.full_name }}</h1>
+            {% if client.age %}
+            <p><strong>Age:</strong> {{ client.age }}</p>
+            {% endif %}
+            {% if client.contact_info %}
+            <p><strong>Contact:</strong> {{ client.contact_info }}</p>
+            {% endif %}
+            <p class="text-muted">Client since {{ client.created_at.strftime('%Y-%m-%d') }}</p>
+        </div>
+        <div class="detail-actions">
+            <a href="/clients/{{ client.id }}/edit" class="btn btn-secondary">Edit</a>
+            <button class="btn btn-danger" onclick="deleteClient({{ client.id }})">Delete</button>
+        </div>
+    </div>
+
+    <div class="detail-section">
+        <h2>Session Notes ({{ notes|length }})</h2>
+        <a href="/notes/new?client_id={{ client.id }}" class="btn btn-primary">📝 Add Session Note</a>
+        
+        {% if notes %}
+        <div class="notes-list">
+            {% for note in notes|sort(attribute='session_date', reverse=true) %}
+            <div class="note-card">
+                <h3><a href="/notes/{{ note.id }}">{{ note.title }}</a></h3>
+                <p class="note-date">{{ note.session_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p class="note-preview">{{ note.content[:200] }}...</p>
+                {% if note.follow_up_required %}
+                <span class="badge badge-warning">Follow-up Required</span>
+                {% endif %}
+                {% for tag in note.tags %}
+                <span class="badge badge-info">{{ tag.name }}</span>
+                {% endfor %}
+                <a href="/notes/{{ note.id }}" class="btn btn-sm btn-primary">View</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">No session notes yet. <a href="/notes/new?client_id={{ client.id }}">Create the first one</a></p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function deleteClient(clientId) {
+        if (confirm('Are you sure you want to delete this client and all associated notes?')) {
+            fetch(`http://localhost:8000/clients/${clientId}`, {method: 'DELETE'})
+                .then(r => r.ok ? window.location.href = '/clients' : alert('Error deleting client'))
+                .catch(e => alert('Error: ' + e));
+        }
+    }
+</script>
+{% endblock %}

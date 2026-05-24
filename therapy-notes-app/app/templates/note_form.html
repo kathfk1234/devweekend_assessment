@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_new %}New Session Note{% else %}Edit Session Note{% endif %} - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h1>{% if is_new %}Add New Session Note{% else %}Edit Session Note{% endif %}</h1>
+
+    <form method="post" class="form-container" id="noteForm">
+        <div class="form-group">
+            <label for="client_id">Client *</label>
+            <select id="client_id" name="client_id" required>
+                <option value="">-- Select a client --</option>
+                {% for client in clients %}
+                <option value="{{ client.id }}" {% if note and note.client_id == client.id %}selected{% endif %}>
+                    {{ client.full_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Note Title *</label>
+            <input type="text" id="title" name="title" required
+                   value="{% if note %}{{ note.title }}{% endif %}"
+                   placeholder="e.g., Session on anxiety management">
+        </div>
+
+        <div class="form-group">
+            <label for="session_date">Session Date & Time *</label>
+            <input type="datetime-local" id="session_date" name="session_date" required
+                   value="{% if note %}{{ note.session_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label for="content">Session Notes *</label>
+            <textarea id="content" name="content" required rows="10"
+                      placeholder="Write your detailed session notes here...">{% if note %}{{ note.content }}{% endif %}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="tags">Tags (separate with commas)</label>
+            <input type="text" id="tags" name="tags"
+                   placeholder="e.g., anxiety, stress management, family issues"
+                   value="{% if note %}{{ note.tags|map(attribute='name')|join(', ') }}{% endif %}">
+        </div>
+
+        <div class="form-group checkbox">
+            <input type="checkbox" id="follow_up_required" name="follow_up_required"
+                   {% if note and note.follow_up_required %}checked{% endif %}>
+            <label for="follow_up_required">Mark as requiring follow-up</label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if is_new %}Create Note{% else %}Save Changes{% endif %}</button>
+            <a href="/notes" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('noteForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const tagValues = document.getElementById('tags').value
+            .split(',')
+            .map(t => t.trim())
+            .filter(t => t);
+
+        const data = {
+            client_id: parseInt(document.getElementById('client_id').value),
+            title: document.getElementById('title').value,
+            content: document.getElementById('content').value,
+            session_date: document.getElementById('session_date').value + ':00Z',
+            follow_up_required: document.getElementById('follow_up_required').checked,
+            tag_ids: []
+        };
+
+        try {
+            const method = {{ 'PUT' if not is_new else 'POST' }};
+            const url = {{ '"http://localhost:8000/notes/' + (note.id|string) + '"' if not is_new else '"http://localhost:8000/notes/"' }};
+            
+            const response = await fetch(url, {
+                method: '{{ 'PUT' if not is_new else 'POST' }}',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.href = '/notes';
+            } else {
+                const error = await response.json();
+                alert('Error saving note: ' + error.detail);
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    });
+</script>
+{% endblock %}
