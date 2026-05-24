@@ -7,11 +7,13 @@
 **Prerequisites**: Python 3.8+, pip
 
 1. **Navigate to project directory:**
+
 ```bash
 cd therapy-notes-app
 ```
 
 2. **Create and activate Python virtual environment:**
+
 ```bash
 python3 -m venv venv
 # On Linux/Mac:
@@ -21,16 +23,19 @@ venv\Scripts\activate
 ```
 
 3. **Install all dependencies:**
+
 ```bash
 pip install -r requirements.txt
 ```
 
 4. **Run the application:**
+
 ```bash
 python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 5. **Access the application:**
+
 Open your browser to `http://localhost:8000`
 
 ### What Gets Installed
@@ -43,6 +48,7 @@ Open your browser to `http://localhost:8000`
 - **python-multipart 0.0.6** - Form data parsing support
 
 ### Data Persistence
+
 - The database file (`therapy_notes.db`) is automatically created on first run
 - All data persists between application restarts
 - No external database setup required
@@ -55,7 +61,7 @@ Open your browser to `http://localhost:8000`
 ### Stack Rationale
 
 | Component | Choice | Why This Choice |
-|-----------|--------|-----------------|
+| ----------- | -------- | ----------------- |
 | **Framework** | FastAPI | Modern, type-safe, automatic API docs, excellent performance, hot reload |
 | **Database** | SQLite | Zero setup, file-based persistence, sufficient for MVP, migration-ready |
 | **ORM** | SQLAlchemy | Industry standard, prevents SQL injection, clean API, easy migration |
@@ -118,6 +124,7 @@ Open your browser to `http://localhost:8000`
 **The Problem**: A therapist could submit a form with only whitespace in the content field.
 
 **The Code**:
+
 ```python
 # Validate that content is not empty/whitespace
 if not note.content.strip():
@@ -125,6 +132,7 @@ if not note.content.strip():
 ```
 
 **Impact**:
+
 - Without this: Note saves with meaningless content
 - Database gets polluted with whitespace-only entries
 - With this: Form rejected, therapist prompted to write meaningful content
@@ -138,6 +146,7 @@ if not note.content.strip():
 **The Problem**: Empty string search would return all notes.
 
 **The Code**:
+
 ```python
 normalized_query = query.strip()
 if not normalized_query:
@@ -155,6 +164,7 @@ if not normalized_query:
 **The Problem**: "Anxiety", "anxiety", "ANXIETY" treated as different tags.
 
 **The Code**:
+
 ```python
 tag_name = tag_name.strip().lower()  # Normalize before lookup
 ```
@@ -170,6 +180,7 @@ tag_name = tag_name.strip().lower()  # Normalize before lookup
 **The Problem**: Calling `.offset().limit()` before `.order_by()` raises error.
 
 **The Code**:
+
 ```python
 # CORRECT order - order_by BEFORE offset/limit:
 .order_by(SessionNote.session_date.desc()).offset(skip).limit(limit)
@@ -184,6 +195,7 @@ tag_name = tag_name.strip().lower()  # Normalize before lookup
 **The Problem**: Deleting a client should automatically clean up associated notes.
 
 **The Implementation**:
+
 ```python
 relationship("SessionNote", cascade="all, delete-orphan", 
             foreign_keys="SessionNote.client_id")
@@ -200,6 +212,7 @@ relationship("SessionNote", cascade="all, delete-orphan",
 **The Problem**: Forms used hardcoded URLs like `http://localhost:8000/clients/`.
 
 **The Solution**: Changed to relative URLs:
+
 ```javascript
 const url = is_new ? '/clients/' : `/clients/{{ client.id }}`;
 const method = is_new ? 'POST' : 'PUT';
@@ -214,30 +227,36 @@ const method = is_new ? 'POST' : 'PUT';
 ### AI Assistance Examples
 
 #### 1. Architecture Planning
+
 - **Tool**: Claude/Copilot
 - **Asked**: "How should I structure FastAPI routes for CRUD?"
 - **Modified**: Extracted validation to schemas.py, added search service, added domain-specific features
 
 #### 2. Database Design
+
 - **Tool**: Claude/Copilot
 - **Asked**: "Many-to-many relationships with cascade deletes?"
 - **Modified**: Added explicit CASCADE, added indexes, added follow_up_required field
 
 #### 3. Search Implementation
+
 - **Tool**: Claude/Copilot
 - **Asked**: "Case-insensitive search in SQLAlchemy?"
 - **Modified**: Built comprehensive search service with query normalization
 
 #### 4. Pydantic Schemas
+
 - **Tool**: Claude/Copilot
 - **Modified**: Added comprehensive validation, business logic validation, separate Create/Update schemas
 
 #### 5. CSS Styling
+
 - **Tool**: Claude/Copilot
 - **Asked**: "Professional CSS stylesheet for therapy app?"
 - **Modified**: Changed to professional dark theme, removed animations, added accessibility focus
 
 #### 6. Form Handling
+
 - **Tool**: Claude/Copilot
 - **Asked**: "Form submissions with FastAPI and Jinja?"
 - **Modified**: Fixed absolute URLs to relative, added error handling, kept client and server validation
@@ -254,7 +273,8 @@ I used AI as a **starting point for familiar patterns**:
 
 **Most Impactful**: Accelerated CSS and template scaffolding
 
-**Most Significant Personal Contributions**: 
+**Most Significant Personal Contributions**:
+
 - Architecture decisions (CRUD separation)
 - Edge case handling (whitespace validation)
 - Dark theme design
@@ -324,22 +344,26 @@ I used AI as a **starting point for familiar patterns**:
 ## Question 7: CRUD Operations Verification
 
 ### Create ✅
+
 - Create new clients through web form
 - Create session notes linked to clients
 - All data persists in database
 
 ### Read ✅
+
 - View all clients list
 - View individual client details with all notes
 - Search notes by title/content/keywords
 - Filter notes by follow-up status
 
 ### Update ✅
+
 - Edit client information
 - Edit session note content and tags
 - Changes persist immediately
 
 ### Delete ✅
+
 - Delete individual session notes
 - Delete clients (with cascade delete)
 - Cascade deletion prevents orphaned records
@@ -364,6 +388,7 @@ I used AI as a **starting point for familiar patterns**:
 🚀 **PRODUCTION-READY** for single-therapist use case
 
 Immediately useful for:
+
 - Managing client profiles and contact information
 - Documenting therapy session notes with timestamps
 - Tracking follow-up requirements
@@ -372,6 +397,7 @@ Immediately useful for:
 - Accessing all data through professional dark-themed UI
 
 Clear upgrade path for:
+
 - Multi-user support (add user_id)
 - Export functionality (add PDF/CSV)
 - Advanced search (full-text indexing)
