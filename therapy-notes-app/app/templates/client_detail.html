@@ -51,7 +51,7 @@
 <script>
     function deleteClient(clientId) {
         if (confirm('Are you sure you want to delete this client and all associated notes?')) {
-            fetch(`http://localhost:8000/clients/${clientId}`, {method: 'DELETE'})
+            fetch(`/clients/${clientId}`, {method: 'DELETE'})
                 .then(r => r.ok ? window.location.href = '/clients' : alert('Error deleting client'))
                 .catch(e => alert('Error: ' + e));
         }

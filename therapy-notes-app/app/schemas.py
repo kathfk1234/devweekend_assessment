@@ -98,7 +98,3 @@ class SessionNoteWithClient(SessionNoteResponse):
 
     class Config:
         from_attributes = True
-
-
-# Update forward references
-ClientWithNotes.model_rebuild()
