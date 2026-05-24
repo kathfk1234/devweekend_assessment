@@ -19,7 +19,7 @@ async def home(request: Request, db: Session = Depends(get_db)):
     all_notes = crud.get_all_session_notes(db, skip=0, limit=10)
     follow_up_notes = crud.get_follow_up_required_notes(db)
     
-    return await request.app.state.templates.TemplateResponse("index.html", {
+    return request.app.state.templates.TemplateResponse("index.html", {
         "request": request,
         "clients_count": len(all_clients),
         "notes_count": len(all_notes),
@@ -32,7 +32,7 @@ async def home(request: Request, db: Session = Depends(get_db)):
 async def clients_page(request: Request, db: Session = Depends(get_db)):
     """Clients list page."""
     clients = crud.get_all_clients(db)
-    return await request.app.state.templates.TemplateResponse("clients.html", {
+    return request.app.state.templates.TemplateResponse("clients.html", {
         "request": request,
         "clients": clients
     })
@@ -41,7 +41,7 @@ async def clients_page(request: Request, db: Session = Depends(get_db)):
 @router.get("/clients/new", response_class=HTMLResponse)
 async def new_client_page(request: Request):
     """New client form page."""
-    return await request.app.state.templates.TemplateResponse("client_form.html", {
+    return request.app.state.templates.TemplateResponse("client_form.html", {
         "request": request,
         "is_new": True
     })
@@ -54,7 +54,7 @@ async def client_detail_page(request: Request, client_id: int, db: Session = Dep
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
-    return await request.app.state.templates.TemplateResponse("client_detail.html", {
+    return request.app.state.templates.TemplateResponse("client_detail.html", {
         "request": request,
         "client": client,
         "notes": client.notes
@@ -68,7 +68,7 @@ async def edit_client_page(request: Request, client_id: int, db: Session = Depen
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
-    return await request.app.state.templates.TemplateResponse("client_form.html", {
+    return request.app.state.templates.TemplateResponse("client_form.html", {
         "request": request,
         "is_new": False,
         "client": client
@@ -80,7 +80,7 @@ async def notes_page(request: Request, db: Session = Depends(get_db)):
     """Session notes list page."""
     notes = crud.get_all_session_notes(db)
     tags = crud.get_all_tags(db)
-    return await request.app.state.templates.TemplateResponse("notes.html", {
+    return request.app.state.templates.TemplateResponse("notes.html", {
         "request": request,
         "notes": notes,
         "tags": tags
@@ -92,7 +92,7 @@ async def new_note_page(request: Request, db: Session = Depends(get_db)):
     """New session note form page."""
     clients = crud.get_all_clients(db)
     tags = crud.get_all_tags(db)
-    return await request.app.state.templates.TemplateResponse("note_form.html", {
+    return request.app.state.templates.TemplateResponse("note_form.html", {
         "request": request,
         "is_new": True,
         "clients": clients,
@@ -107,7 +107,7 @@ async def note_detail_page(request: Request, note_id: int, db: Session = Depends
     if not note:
         raise HTTPException(status_code=404, detail="Session note not found")
     
-    return await request.app.state.templates.TemplateResponse("note_detail.html", {
+    return request.app.state.templates.TemplateResponse("note_detail.html", {
         "request": request,
         "note": note
     })
@@ -123,7 +123,7 @@ async def edit_note_page(request: Request, note_id: int, db: Session = Depends(g
     clients = crud.get_all_clients(db)
     tags = crud.get_all_tags(db)
     
-    return await request.app.state.templates.TemplateResponse("note_form.html", {
+    return request.app.state.templates.TemplateResponse("note_form.html", {
         "request": request,
         "is_new": False,
         "note": note,
@@ -139,7 +139,7 @@ async def search_page(request: Request, q: str = "", db: Session = Depends(get_d
     if q:
         results = search_notes_service(db, q)
     
-    return await request.app.state.templates.TemplateResponse("search.html", {
+    return request.app.state.templates.TemplateResponse("search.html", {
         "request": request,
         "query": q,
         "results": results
@@ -150,7 +150,7 @@ async def search_page(request: Request, q: str = "", db: Session = Depends(get_d
 async def follow_up_page(request: Request, db: Session = Depends(get_db)):
     """Follow-up reminders page."""
     notes = crud.get_follow_up_required_notes(db)
-    return await request.app.state.templates.TemplateResponse("follow_up.html", {
+    return request.app.state.templates.TemplateResponse("follow_up.html", {
         "request": request,
         "notes": notes
     })

@@ -96,9 +96,9 @@ def get_notes_by_client(db: Session, client_id: int):
 
 def get_all_session_notes(db: Session, skip: int = 0, limit: int = 100):
     """Retrieve all session notes with pagination."""
-    return db.query(models.SessionNote).offset(skip).limit(limit).order_by(
+    return db.query(models.SessionNote).order_by(
         models.SessionNote.session_date.desc()
-    ).all()
+    ).offset(skip).limit(limit).all()
 
 
 def get_follow_up_required_notes(db: Session):
