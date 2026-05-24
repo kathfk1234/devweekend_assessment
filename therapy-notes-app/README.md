@@ -51,7 +51,7 @@ therapy-notes-app/
 ## Tech Stack
 
 | Component | Choice | Reason |
-|-----------|--------|--------|
+| ----------- | -------- | -------- |
 | **Backend Framework** | FastAPI | Modern, fast, built-in validation with Pydantic |
 | **Database** | SQLite | Zero-setup persistence, perfect for local apps, production-ready for small scale |
 | **ORM** | SQLAlchemy | Industry standard, clean migration path to PostgreSQL if needed |
@@ -61,26 +61,31 @@ therapy-notes-app/
 ## Installation & Setup
 
 ### Requirements
+
 - Python 3.8+
 - pip or poetry
 
 ### Step 1: Clone and Navigate
+
 ```bash
 cd therapy-notes-app
 ```
 
 ### Step 2: Create Virtual Environment
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 ### Step 3: Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### Step 4: Run the Application
+
 ```bash
 python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -90,19 +95,23 @@ The app will start at **http://localhost:8000**
 ## Usage Guide
 
 ### Dashboard
+
 Visit http://localhost:8000 to see the dashboard with:
+
 - Total client count
 - Total session notes
 - Follow-up count
 - Recent session notes
 
 ### Managing Clients
-1. **View All Clients**: Click "Clients" in navigation or goto http://localhost:8000/clients
+
+1. **View All Clients**: Click "Clients" in navigation or goto `http://localhost:8000/clients`
 2. **Create Client**: Click "➕ New Client" and fill in details
 3. **Edit Client**: Go to client detail page and click "Edit"
 4. **Delete Client**: Go to client detail page and click "Delete" (also deletes all associated notes)
 
 ### Managing Session Notes
+
 1. **View All Notes**: Click "Notes" in navigation
 2. **Create Note**: Click "📝 New Session Note", select client, fill in details
 3. **Add Tags**: Comma-separated tags (e.g., "anxiety, stress management, family")
@@ -111,18 +120,22 @@ Visit http://localhost:8000 to see the dashboard with:
 6. **Delete Note**: Click "View" on a note, then "Delete"
 
 ### Search Notes
+
 Use the search bar in navigation to find notes by:
+
 - Keywords in title
 - Content text
 - Session details
 Search is **case-insensitive** and handles whitespace normalization
 
 ### View Follow-ups
+
 Click "Follow-ups" in navigation to see all notes marked as requiring follow-up action
 
 ## Database Models
 
 ### Client
+
 - `id`: Unique identifier
 - `full_name`: Client's name (required)
 - `age`: Age (optional)
@@ -130,6 +143,7 @@ Click "Follow-ups" in navigation to see all notes marked as requiring follow-up 
 - `created_at`: Timestamp
 
 ### SessionNote
+
 - `id`: Unique identifier
 - `client_id`: Foreign key to Client
 - `title`: Session title (required)
@@ -140,6 +154,7 @@ Click "Follow-ups" in navigation to see all notes marked as requiring follow-up 
 - Relationship: Many-to-Many with Tags
 
 ### Tag
+
 - `id`: Unique identifier
 - `name`: Tag name (unique, case-insensitive)
 - Relationship: Many-to-Many with SessionNotes
@@ -147,6 +162,7 @@ Click "Follow-ups" in navigation to see all notes marked as requiring follow-up 
 ## API Endpoints
 
 ### Clients
+
 - `GET /clients/` - List all clients
 - `POST /clients/` - Create new client
 - `GET /clients/{id}` - Get client with notes
@@ -155,6 +171,7 @@ Click "Follow-ups" in navigation to see all notes marked as requiring follow-up 
 - `DELETE /clients/{id}` - Delete client
 
 ### Session Notes
+
 - `GET /notes/` - List all notes
 - `POST /notes/` - Create new note
 - `GET /notes/{id}` - Get note detail
@@ -165,32 +182,41 @@ Click "Follow-ups" in navigation to see all notes marked as requiring follow-up 
 - `DELETE /notes/{id}` - Delete note
 
 ### Health Check
+
 - `GET /health` - API health check
 
 ## Key Features Explained
 
 ### 1. Full-Text Search (Case-Insensitive)
+
 **Feature**: Searching for "anxiety" finds "Anxiety", "ANXIETY", or "panic anxiety"
+
 - Located in: [app/services/search.py](app/services/search.py#L8-L25)
 - Implementation uses SQLite ILIKE for case-insensitive matching
 - Handles leading/trailing whitespace normalization
 
 ### 2. Follow-up Tracking
+
 **Feature**: Mark important sessions for follow-up action
+
 - Therapists can flag notes as "requires follow-up"
 - Dashboard shows count of items needing attention
 - Dedicated follow-up page shows all flagged items
 - Search and tag with follow-up items for organized tracking
 
 ### 3. Tag-Based Organization
+
 **Feature**: Categorize notes for better organization
+
 - Common tags: anxiety, depression, trauma, family therapy, cognitive-behavioral therapy
 - Tags are case-insensitive and deduplicated
 - Filter notes by tags
 - Multiple tags per note
 
 ### 4. Client-Centric View
+
 **Feature**: See all sessions for a specific client in chronological order
+
 - Visit client profile to see session timeline
 - Quickly understand client history
 - Create new notes directly from client profile
@@ -235,6 +261,7 @@ Press `Ctrl+C` in the terminal running the server. The database is automatically
 ## Troubleshooting
 
 **Port already in use?**
+
 ```bash
 python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
