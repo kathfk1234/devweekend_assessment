@@ -45,7 +45,7 @@
 <script>
     function deleteNote(noteId) {
         if (confirm('Are you sure you want to delete this session note?')) {
-            fetch(`http://localhost:8000/notes/${noteId}`, {method: 'DELETE'})
+            fetch(`/notes/${noteId}`, {method: 'DELETE'})
                 .then(r => r.ok ? window.location.href = '/notes' : alert('Error deleting note'))
                 .catch(e => alert('Error: ' + e));
         }

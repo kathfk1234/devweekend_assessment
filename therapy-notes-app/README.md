@@ -11,7 +11,9 @@ A lightweight, full-featured therapy session notes management application built 
 - **Follow-up Tracking**: Mark notes that require follow-up and view them on a dedicated page
 - **Session History**: View chronological history of all sessions for each client
 - **Responsive UI**: Clean, professional web interface built with HTML, CSS, and Jinja2
+- **Dark Theme**: Eye-friendly dark color scheme with excellent contrast
 - **Data Persistence**: All data persists in SQLite database between app restarts
+- **Full CRUD Operations**: All operations work seamlessly through web UI with form submission
 
 ## Project Structure
 
@@ -220,6 +222,16 @@ Click "Follow-ups" in navigation to see all notes marked as requiring follow-up 
 - Visit client profile to see session timeline
 - Quickly understand client history
 - Create new notes directly from client profile
+
+### 5. Dark Theme UI
+
+**Feature**: Professional dark theme for comfortable viewing
+
+- Reduces eye strain during long sessions
+- Modern color palette with excellent contrast ratios
+- Maintains accessibility standards (WCAG AA compliant)
+- All UI elements (buttons, cards, forms) styled for dark mode
+- Implemented in [app/static/css/style.css](app/static/css/style.css#L1-L50) using CSS custom properties
 
 ## Production Ready Features
 
