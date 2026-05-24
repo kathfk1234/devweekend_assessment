@@ -31,6 +31,7 @@ python3 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **What gets installed**:
+
 - FastAPI 0.104.1 - Web framework
 - Uvicorn 0.24.0 - ASGI server
 - SQLAlchemy 2.0.23 - ORM
@@ -75,7 +76,7 @@ The database (`therapy_notes.db`) is created automatically on first run. No setu
 **What Would Have Been Worse**:
 
 | Bad Choice | Why It Fails |
-|-----------|------------|
+| ----------- | ------------ |
 | **React SPA** | Extra build step, npm install issues, server setup complexity, reviewers can't just run it |
 | **PostgreSQL** | Needs separate database server running, connection setup, credentials, slower review experience |
 | **Django** | Overkill for small app, migration system overhead, slower to scaffold, heavier than needed |
@@ -111,6 +112,7 @@ content: "    \n\t\n   " ← Only whitespace
 ```
 
 **Without This Handling**:
+
 - The note would save with meaningless content
 - When therapist reviews notes later, it appears something was recorded when nothing was
 - Whitespace-only notes pollute search results
@@ -118,12 +120,14 @@ content: "    \n\t\n   " ← Only whitespace
 - Wasted follow-up attempts on blank notes
 
 **With This Handling**:
+
 - The form submission is rejected with error message
 - Therapist is prompted to actually write content
 - Database stays clean with only meaningful notes
 - API endpoint returns HTTP 400 with message: `{"detail":"Session content cannot be empty"}`
 
 **Additional Similar Handling** in the same file:
+
 - Line 114: Update validation also checks for empty content
 - [therapy-notes-app/app/services/search.py, lines 18-21](therapy-notes-app/app/services/search.py#L18-L21): Search query normalization prevents empty searches from returning all results
 
@@ -133,52 +137,77 @@ content: "    \n\t\n   " ← Only whitespace
 
 ### List every place you used AI (which tool, what you asked, what it gave you). For at least one of these, describe something you changed about the AI output and why.
 
-**AI Usage Summary**: I used Claude/Copilot for code generation assistance at specific points.
+**AI Usage Summary**: I used ChatGPT to help with validating the stack I would use along with the overall structure of the project, and Claude/Copilot for code generation assistance at specific points.
 
 ### Place 1: FastAPI Route Structures
+
 **Tool**: Claude Code Generation  
+
 **Question**: "How should I structure FastAPI routes for a CRUD app with client and session notes endpoints?"  
+
 **What It Gave**: Template for router setup with Depends injection and error handling patterns  
-**What I Changed**: 
+
+**What I Changed**:
+
 - AI suggested separate router files (I kept this)
 - AI put all validation in routes; I extracted to schemas.py and crud.py for separation of concerns
 - AI didn't include search endpoints; I designed and added full-text search service
 - Reason: Cleaner architecture where routes are thin, CRUD logic is dense
 
 ### Place 2: SQLAlchemy Models with Relationships
+
 **Tool**: Claude Code Generation  
-**Question**: "How to set up a many-to-many relationship between SessionNote and Tag in SQLAlchemy with cascade deletes?"  
+
+**Question**: "How to set up a many-to-many relationshipbbetween SessionNote and Tag in SQLAlchemy with cascade deletes?"  
+
 **What It Gave**: Complete model definitions with association table pattern  
+
 **What I Changed**:
+
 - AI suggested ForeignKey without CASCADE; I added `ondelete='CASCADE'` for data integrity
 - AI forgot to add `index=True` on important query columns; I added indexes to `client_id`, `session_date`, `follow_up_required`, and `tag.name`
 - Reason: Performance for real-world queries, automatic cleanup when parents delete
 
 ### Place 3: CSS Styling
+
 **Tool**: Claude/Copilot  
+
 **Question**: "Create a professional CSS stylesheet for a therapy app dashboard with responsive design, cards, forms, and navigation"  
+
 **What It Gave**: Comprehensive CSS with variables, grid layouts, responsive breakpoints  
+
 **What I Changed**:
+
 - AI used generic color scheme; I chose calming blues, professional grays, and warning colors appropriate for healthcare
 - AI included complicated animations; I removed them (unnecessary, could distract therapists)
 - AI forgot print styles; I didn't add (wasn't needed for this assessment)
 - Reason: Appropriate design for the domain - calm, readable, professional
 
 ### Place 4: Jinja2 Template Structure
+
 **Tool**: Claude Code Generation  
+
 **Question**: "Create a base.html Jinja2 template for a web app with navigation, footer, and block extension points"  
+
 **What It Gave**: Good template structure with Flask/Jinja patterns  
+
 **What I Changed**:
+
 - AI focused on Flask patterns; I adapted for FastAPI's `request` object requirements
 - AI used simple Bootstrap CDN; I wrote custom CSS for cleaner dependency management
 - AI suggested complex template inheritance chains; I kept it simple with one base template
 - Reason: Direct FastAPI compatibility, lightweight dependency approach
 
 ### Place 5: Search Functionality Implementation
+
 **Tool**: Claude/Copilot  
+
 **Question**: "How to implement case-insensitive search in SQLAlchemy with SQLite?"  
+
 **What It Gave**: Basic LIKE pattern matching suggestion  
+
 **What I Changed**:
+
 - AI suggested simple `filter()` clauses; I added comprehensive search service with:
   - Query normalization (stripping whitespace)
   - Empty query prevention (returns [])
@@ -187,23 +216,31 @@ content: "    \n\t\n   " ← Only whitespace
 - Reason: Professional search UX - predictable behavior with edge cases handled
 
 ### Place 6: Form Handling
+
 **Tool**: Claude/Copilot  
+
 **Question**: "How to handle form submissions with FastAPI and Jinja templates?"  
+
 **What It Gave**: Basic fetch() with FormData pattern  
+
 **What I Changed**:
+
 - AI suggested form submission handlers in templates; I moved JavaScript logic to separate endpoints
 - AI used bare fetch(); I added error handling and user feedback
 - AI didn't validate on both client and server; I kept both for UX and security
 - Reason: Better UX with feedback, security best practice of server-side validation
 
 ### Honest Reflection on AI Usage
+
 I used AI as a **starting point for patterns I was familiar with**, not as a crutch. Every piece of code was:
+
 1. Understood before integration
 2. Modified for the specific context
 3. Tested and verified working
 4. Often enhanced with error handling and edge cases
 
 I didn't use AI to:
+
 - Write complex business logic I didn't understand
 - Copy-paste without comprehension
 - Skip testing
@@ -220,18 +257,21 @@ The most significant AI impact was **accelerating** CSS and template scaffolding
 **The Gap: Client Import/Export and Backup Features**
 
 What's missing:
+
 - No way to export client data (CSV, JSON, PDF)
 - No bulk import for existing client records
 - No database backup/restore functionality
 - No audit log of who edited what when (single user, but still useful)
 
 Why this matters:
+
 - Real therapists need to backup client data regularly
 - GDPR/HIPAA compliance might require data export capabilities
 - Therapist might want to migrate to different app and need data extraction
 - No history means if a therapist deletes a note by accident, it's gone forever
 
 Why I didn't implement it:
+
 - Time constraint - CRUD + search + tagging was the MVP
 - Database integrity isn't at risk (SQLite works fine locally)
 - Not core to the "persistent mini-app" requirements
@@ -240,6 +280,7 @@ Why I didn't implement it:
 What I'd do with another day:
 
 **1. Export Functionality** (2-3 hours)
+
 ```python
 # New endpoint: GET /export/all?format=json
 # Options: JSON, CSV, PDF (with reportlab)
@@ -248,6 +289,7 @@ What I'd do with another day:
 ```
 
 **2. Import Functionality** (2-3 hours)
+
 ```python
 # New endpoint: POST /import/clients
 # Accept CSV with columns: name, age, contact_info
@@ -256,6 +298,7 @@ What I'd do with another day:
 ```
 
 **3. Audit Logging** (2-3 hours)
+
 ```python
 # New table: AuditLog(id, action, user, timestamp, notes)
 # Track: created client, edited note, deleted note
@@ -264,6 +307,7 @@ What I'd do with another day:
 ```
 
 **4. Database Backup UI** (1-2 hours)
+
 ```python
 # New page: Settings → Backup
 # "Download Full Backup" button → downloads therapy_notes.db
@@ -272,6 +316,7 @@ What I'd do with another day:
 ```
 
 **Implementation Strategy**:
+
 - Keep existing code structure
 - Add `services/export.py` and `services/backup.py`
 - Add new routes in `/admin` namespace
