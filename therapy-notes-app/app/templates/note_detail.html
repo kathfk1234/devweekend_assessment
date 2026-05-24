@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ note.title }} - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="note-detail">
+    <div class="detail-header">
+        <div>
+            <h1>{{ note.title }}</h1>
+            <p class="note-client"><strong>Client:</strong> <a href="/clients/{{ note.client.id }}">{{ note.client.full_name }}</a></p>
+            <p class="note-date">Session: {{ note.session_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="text-muted">Created: {{ note.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        </div>
+        <div class="detail-actions">
+            <a href="/notes/{{ note.id }}/edit" class="btn btn-secondary">Edit</a>
+            <button class="btn btn-danger" onclick="deleteNote({{ note.id }})">Delete</button>
+        </div>
+    </div>
+
+    {% if note.follow_up_required %}
+    <div class="alert alert-warning">
+        ⚠️ <strong>This note requires follow-up</strong>
+    </div>
+    {% endif %}
+
+    <div class="detail-section">
+        <h2>Notes</h2>
+        <div class="note-content">
+            {{ note.content }}
+        </div>
+    </div>
+
+    {% if note.tags %}
+    <div class="detail-section">
+        <h2>Tags</h2>
+        <div class="tags-list">
+            {% for tag in note.tags %}
+            <span class="badge badge-info">{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function deleteNote(noteId) {
+        if (confirm('Are you sure you want to delete this session note?')) {
+            fetch(`http://localhost:8000/notes/${noteId}`, {method: 'DELETE'})
+                .then(r => r.ok ? window.location.href = '/notes' : alert('Error deleting note'))
+                .catch(e => alert('Error: ' + e));
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Clients - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="clients-page">
+    <h1>Clients</h1>
+    <a href="/clients/new" class="btn btn-primary">➕ Add New Client</a>
+
+    {% if clients %}
+    <div class="clients-grid">
+        {% for client in clients %}
+        <div class="client-card">
+            <h3><a href="/clients/{{ client.id }}">{{ client.full_name }}</a></h3>
+            {% if client.age %}
+            <p><strong>Age:</strong> {{ client.age }}</p>
+            {% endif %}
+            {% if client.contact_info %}
+            <p><strong>Contact:</strong> {{ client.contact_info }}</p>
+            {% endif %}
+            <p class="text-muted">Created: {{ client.created_at.strftime('%Y-%m-%d') }}</p>
+            <div class="card-actions">
+                <a href="/clients/{{ client.id }}" class="btn btn-sm btn-primary">View</a>
+                <a href="/clients/{{ client.id }}/edit" class="btn btn-sm btn-secondary">Edit</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No clients yet. <a href="/clients/new">Create your first client</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_new %}New Client{% else %}Edit Client{% endif %} - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h1>{% if is_new %}Add New Client{% else %}Edit Client: {{ client.full_name }}{% endif %}</h1>
+
+    <form method="post" class="form-container" id="clientForm">
+        <div class="form-group">
+            <label for="full_name">Full Name *</label>
+            <input type="text" id="full_name" name="full_name" required 
+                   value="{% if client %}{{ client.full_name }}{% endif %}"
+                   placeholder="Enter client's full name">
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="0" max="150"
+                   value="{% if client and client.age %}{{ client.age }}{% endif %}"
+                   placeholder="Enter age (optional)">
+        </div>
+
+        <div class="form-group">
+            <label for="contact_info">Contact Information</label>
+            <input type="text" id="contact_info" name="contact_info"
+                   value="{% if client %}{{ client.contact_info }}{% endif %}"
+                   placeholder="Phone, email, or other contact (optional)">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if is_new %}Create Client{% else %}Save Changes{% endif %}</button>
+            <a href="/clients" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('clientForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const data = {
+            full_name: document.getElementById('full_name').value,
+            age: document.getElementById('age').value ? parseInt(document.getElementById('age').value) : null,
+            contact_info: document.getElementById('contact_info').value || null
+        };
+
+        try {
+            const method = {{ 'PUT' if not is_new else 'POST' }};
+            const url = {{ '"http://localhost:8000/clients/' + (client.id|string) + '"' if not is_new else '"http://localhost:8000/clients/"' }};
+            
+            const response = await fetch(url, {
+                method: '{{ 'PUT' if not is_new else 'POST' }}',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.href = '/clients';
+            } else {
+                alert('Error saving client');
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    });
+</script>
+{% endblock %}

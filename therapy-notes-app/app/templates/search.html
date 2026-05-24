@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <h1>Search Session Notes</h1>
+    
+    <form method="get" action="/search" class="search-form-large">
+        <input type="text" name="q" placeholder="Search by title, content, or keywords..." value="{{ query }}" required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if query %}
+    <div class="search-results">
+        {% if results %}
+        <p class="results-count">Found {{ results|length }} result(s) for "{{ query }}"</p>
+        <div class="notes-list">
+            {% for note in results %}
+            <div class="note-card">
+                <h3><a href="/notes/{{ note.id }}">{{ note.title }}</a></h3>
+                <p class="note-client"><strong>Client:</strong> {{ note.client.full_name }}</p>
+                <p class="note-date">{{ note.session_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p class="note-preview">{{ note.content[:200] }}...</p>
+                {% if note.follow_up_required %}
+                <span class="badge badge-warning">Follow-up Required</span>
+                {% endif %}
+                {% for tag in note.tags %}
+                <span class="badge badge-info">{{ tag.name }}</span>
+                {% endfor %}
+                <a href="/notes/{{ note.id }}" class="btn btn-sm btn-primary">View</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No results found for "{{ query }}". Try a different search term.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

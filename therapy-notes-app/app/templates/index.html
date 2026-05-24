@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Dashboard</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ clients_count }}</div>
+            <div class="stat-label">Total Clients</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ notes_count }}</div>
+            <div class="stat-label">Session Notes</div>
+        </div>
+        <div class="stat-card highlight">
+            <div class="stat-number">{{ follow_up_count }}</div>
+            <div class="stat-label">Follow-ups Required</div>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="/clients/new" class="btn btn-primary">➕ New Client</a>
+            <a href="/notes/new" class="btn btn-primary">📝 New Session Note</a>
+            <a href="/follow-up" class="btn btn-warning">⚠️ View Follow-ups</a>
+        </div>
+    </div>
+
+    {% if recent_notes %}
+    <div class="dashboard-section">
+        <h2>Recent Session Notes</h2>
+        <div class="notes-list">
+            {% for note in recent_notes %}
+            <div class="note-card">
+                <h3><a href="/notes/{{ note.id }}">{{ note.title }}</a></h3>
+                <p class="note-client">Client: <strong>{{ note.client.full_name }}</strong></p>
+                <p class="note-date">{{ note.session_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p class="note-preview">{{ note.content[:150] }}...</p>
+                {% if note.follow_up_required %}
+                <span class="badge badge-warning">Follow-up Required</span>
+                {% endif %}
+                {% for tag in note.tags %}
+                <span class="badge badge-info">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

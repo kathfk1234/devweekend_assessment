@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Session Notes - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="notes-page">
+    <h1>Session Notes</h1>
+    <a href="/notes/new" class="btn btn-primary">📝 Add New Session Note</a>
+
+    {% if notes %}
+    <div class="notes-list">
+        {% for note in notes %}
+        <div class="note-card">
+            <h3><a href="/notes/{{ note.id }}">{{ note.title }}</a></h3>
+            <p class="note-client"><strong>Client:</strong> {{ note.client.full_name }}</p>
+            <p class="note-date">{{ note.session_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="note-preview">{{ note.content[:150] }}...</p>
+            {% if note.follow_up_required %}
+            <span class="badge badge-warning">Follow-up Required</span>
+            {% endif %}
+            {% for tag in note.tags %}
+            <span class="badge badge-info">{{ tag.name }}</span>
+            {% endfor %}
+            <a href="/notes/{{ note.id }}" class="btn btn-sm btn-primary">View</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No session notes yet. <a href="/notes/new">Create your first note</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

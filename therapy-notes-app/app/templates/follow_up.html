@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Follow-up Reminders - Therapy Notes Manager{% endblock %}
+
+{% block content %}
+<div class="follow-up-page">
+    <h1>Follow-up Reminders</h1>
+    <p class="subtitle">Notes that require follow-up action</p>
+
+    {% if notes %}
+    <div class="alert alert-info">
+        You have <strong>{{ notes|length }}</strong> note(s) requiring follow-up
+    </div>
+    <div class="notes-list">
+        {% for note in notes %}
+        <div class="note-card highlight">
+            <h3><a href="/notes/{{ note.id }}">{{ note.title }}</a></h3>
+            <p class="note-client"><strong>Client:</strong> <a href="/clients/{{ note.client.id }}">{{ note.client.full_name }}</a></p>
+            <p class="note-date">Session: {{ note.session_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="note-preview">{{ note.content[:200] }}...</p>
+            {% for tag in note.tags %}
+            <span class="badge badge-info">{{ tag.name }}</span>
+            {% endfor %}
+            <div class="card-actions">
+                <a href="/notes/{{ note.id }}" class="btn btn-sm btn-primary">View</a>
+                <a href="/notes/{{ note.id }}/edit" class="btn btn-sm btn-secondary">Edit</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>Great! No follow-ups required at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

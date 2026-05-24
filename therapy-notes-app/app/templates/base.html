@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Therapy Notes Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/">🧠 Therapy Notes Manager</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/clients">Clients</a></li>
+                <li><a href="/notes">Notes</a></li>
+                <li><a href="/follow-up">Follow-ups</a></li>
+                <li>
+                    <form method="get" action="/search" class="search-form">
+                        <input type="text" name="q" placeholder="Search notes..." required>
+                        <button type="submit">Search</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 Therapy Notes Manager. Built with FastAPI + SQLite.</p>
+    </footer>
+</body>
+</html>
