@@ -46,11 +46,16 @@
         };
 
         try {
-            const method = {{ 'PUT' if not is_new else 'POST' }};
-            const url = {{ '"http://localhost:8000/clients/' + (client.id|string) + '"' if not is_new else '"http://localhost:8000/clients/"' }};
+            {% if is_new %}
+            const url = '/clients/';
+            const method = 'POST';
+            {% else %}
+            const url = '/clients/{{ client.id }}';
+            const method = 'PUT';
+            {% endif %}
             
             const response = await fetch(url, {
-                method: '{{ 'PUT' if not is_new else 'POST' }}',
+                method: method,
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
             });
@@ -58,7 +63,8 @@
             if (response.ok) {
                 window.location.href = '/clients';
             } else {
-                alert('Error saving client');
+                const errorData = await response.json();
+                alert('Error saving client: ' + (errorData.detail || 'Unknown error'));
             }
         } catch (error) {
             alert('Error: ' + error.message);
