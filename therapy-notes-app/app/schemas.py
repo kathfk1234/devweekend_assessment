@@ -1,4 +1,6 @@
 """Pydantic schemas for validation and serialization."""
+from __future__ import annotations
+
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
@@ -52,7 +54,7 @@ class ClientResponse(ClientBase):
 
 class ClientWithNotes(ClientResponse):
     """Schema for returning client data with notes."""
-    notes: List['SessionNoteResponse'] = []
+    notes: List[SessionNoteResponse] = []
 
     class Config:
         from_attributes = True
