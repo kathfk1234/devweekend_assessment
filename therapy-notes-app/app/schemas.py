@@ -52,14 +52,6 @@ class ClientResponse(ClientBase):
         from_attributes = True
 
 
-class ClientWithNotes(ClientResponse):
-    """Schema for returning client data with notes."""
-    notes: List[SessionNoteResponse] = []
-
-    class Config:
-        from_attributes = True
-
-
 class SessionNoteBase(BaseModel):
     """Base schema for session notes."""
     title: str = Field(..., min_length=1, max_length=255)
@@ -89,6 +81,14 @@ class SessionNoteResponse(SessionNoteBase):
     client_id: int
     created_at: datetime
     tags: List[TagResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class ClientWithNotes(ClientResponse):
+    """Schema for returning client data with notes."""
+    notes: List[SessionNoteResponse] = []
 
     class Config:
         from_attributes = True
